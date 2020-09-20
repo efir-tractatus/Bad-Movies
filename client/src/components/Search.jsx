@@ -8,47 +8,47 @@ class Search extends React.Component {
     this.state = {
       genres: [],
     };
+    this.handleSelect = this.handleSelect.bind(this)
   }
 
   componentDidMount() {
     this.getGenres();
   }
 
+  handleSelect(event) {
+    var genre_id = event.target.value
+    this.props.getMovies(genre_id)
+  }
+
   getGenres() {
-    axios
-      .get(
-        'https://api.themoviedb.org/3/genre/movie/list?api_key=' +
-          config.API_KEY +
-          '&language=en-US'
-      )
-      .then((response) => {
-        this.setState({
-          genres: response.data.genres,
-        });
-      })
-      .catch((err) => console.log(err));
+    axios.get('/movies/genres').then((response) => {
+      this.setState({
+        genres: response.data,
+      });
+    });
   }
 
   render() {
     var genreList = this.state.genres.map((genre) => {
       return (
-      <option value={genre.name} key={genre.id}>{genre.name}</option>
-      )
-    })
+        <option value={genre.id} key={genre.id}>
+          {genre.name}
+        </option>
+      );
+    });
     return (
       <div className="search">
-        <button onClick={() => {this.props.swapFavorites()}}>
+        <button
+          onClick={() => {
+            this.props.swapFavorites();
+          }}
+        >
           {this.props.showFaves ? 'Show Results' : 'Show Favorites'}
         </button>
         <br />
         <br />
 
-        {/* Make the select options dynamic from genres !!! */}
-        {/* How can you tell which option has been selected from here? */}
-
-        <select>
-          {genreList}
-        </select>
+        <select onChange={this.handleSelect}>{genreList}</select>
         <br />
         <br />
 
